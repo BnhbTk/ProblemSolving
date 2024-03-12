@@ -31,7 +31,7 @@ def solve(nb_queens) -> bool :
     diag1=[0]*(2*nb_queens-1)
     diag2=[0]*(2*nb_queens-1)
     if solve_rec(0):return cols
-    else:return None
+    else:return []
 
 def display(cols):
     """this function pretty prints a solution
