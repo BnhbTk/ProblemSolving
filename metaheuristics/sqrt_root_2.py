@@ -1,4 +1,5 @@
 import math
+import random
 
 def binary_root(a,b,error):
     """ This function computes the square root of 2 by continuously spliting the interval on two 
