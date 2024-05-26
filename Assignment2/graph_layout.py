@@ -74,14 +74,14 @@ class Solution:
         self.m=m
         self.n=n
         self.positions=[]#these are the positions of the vertices. This is a list of Point.
-        grid=[[0]*n for _ in range(m)]
+        self.grid=[[0]*n for _ in range(m)]
         if init:
             for node in range(len(Solution.graph["nodes"])):
                 while True:
                     row=random.randint(0,m-1)
                     col=random.randint(0,n-1)
-                    if grid[row][col]==0:break
-                grid[row][col]=node+1
+                    if self.grid[row][col]==0:break
+                self.grid[row][col]=node+1
                 self.positions.append(Point(col,row))
     
     def copy(self):
@@ -188,7 +188,7 @@ class Solution:
         """
         if self.grid[row][column]==0:
             self.grid[row][column]=vertex
-            self.points.append(Point(column,row))
+            self.positions.append(Point(column,row))
             return True
         else:
             return False
@@ -244,13 +244,13 @@ class Solution:
                 current=next_hope
         return current
     
-    def backtracking():
-        """You should implement this method to solve the problem by backtracking
+    def backtracking(self):
+        """you should implement this method to solve the problem by backtracking.
         """
         pass
     
-    def branch_and_bound():
-        """ou should implement this method to solve the problem by brand and bound
+    def branch_and_bound(self,m,n):
+        """you should implement this method to solve the problem by brand and bound.
         """
         pass
 
@@ -259,7 +259,8 @@ class Solution:
 def compute_intersections(points,graph):
     """You should implement this function that computes the number of intersections of the edges (using the function doIntersect)
     """
-    return 0
+    pass
+    
 
 def compute_minimal_distance(points,graph):
     """You should implement this function that computes the minimal distance between a vertice and every edge in the graph (you should not
@@ -415,16 +416,15 @@ if __name__=="__main__":
     Solution.graph=benchmark1 # you should test your code with all of the benchmarks
     sol=Solution(12,12,False)
     a=sol.backtracking()
-    b=sol.branch_and_bound()
+    # b=sol.branch_and_bound()
     
-    solmh=Solution(12,12,True)
-    c=solmh.hill_climbing()
-    d=solmh.simulated_annealing()
+    #solmh=Solution(12,12,True)
+    #solmh.plot()
+    # c=solmh.hill_climbing()
+    # d=solmh.simulated_annealing()
     
-    a.plot()
-    b.plot()
-    c.plot()
-    d.plot()
+    # a.plot()
+    # b.plot()
+    # c.plot()
+    # d.plot()
     
-    
-
