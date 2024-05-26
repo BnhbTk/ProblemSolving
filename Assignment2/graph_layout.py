@@ -249,7 +249,7 @@ class Solution:
         """
         pass
     
-    def branch_and_bound(self,m,n):
+    def branch_and_bound(self):
         """you should implement this method to solve the problem by brand and bound.
         """
         pass
