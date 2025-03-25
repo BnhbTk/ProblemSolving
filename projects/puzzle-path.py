@@ -144,7 +144,7 @@ class Grid:
         ...
     
 
-def solve_rec(world,x:int,y:int,nb:int,n:int) -> int:
+def solve_rec(world,row:int,col:int,nb:int,n:int) -> int:
     """This function solves the problem with a backtracking recursive algorithm. It should be used to compute
     the values p_k (as explained in the statements). p_k=n-solve_rec(world,x,y,0,n), such as n is the initial number
     of 1s in the world variable.
@@ -154,8 +154,8 @@ def solve_rec(world,x:int,y:int,nb:int,n:int) -> int:
 
     Args:
         world (_type_): a matrix of size k*k to be built
-        x (int): the row of the current position
-        y (int): the column of the current position
+        row (int): the row of the current position
+        col (int): the column of the current position
         nb (int): initial number of green cells (should be 0 at the first call)
         n (int): the total number of 1s in the world (the k*k matrix)
 
@@ -165,19 +165,19 @@ def solve_rec(world,x:int,y:int,nb:int,n:int) -> int:
     if nb==n:
         return n
     tries=[]
-    if x>0 and world[x-1][y]==1:
-        tries.append((x-1,y))
-    if x<len(world)-1 and world[x+1][y]==1:
-        tries.append((x+1,y))
-    if y>0 and world[x][y-1]==1:
-        tries.append((x,y-1))
-    if y<len(world[0])-1 and world[x][y+1]==1:
-        tries.append((x,y+1))
+    if row>0 and world[row-1][col]==1:
+        tries.append((row-1,col))
+    if row<len(world)-1 and world[row+1][col]==1:
+        tries.append((row+1,col))
+    if col>0 and world[row][col-1]==1:
+        tries.append((row,col-1))
+    if col<len(world[0])-1 and world[row][col+1]==1:
+        tries.append((row,col+1))
     mx=nb
-    for x1,y1 in tries:
-        world[x1][y1]=2
-        sol=solve_rec(world,x1,y1,nb+1,n)
-        world[x1][y1]=1
+    for row1,col1 in tries:
+        world[row1][col1]=2
+        sol=solve_rec(world,row1,col1,nb+1,n)
+        world[row1][col1]=1
         if mx<sol:
             mx=sol
         if mx==n:
