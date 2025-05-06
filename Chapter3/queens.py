@@ -22,11 +22,10 @@ class Queens:
         n = len(self.positions)
         for i in range(n):
             if random.random()<pm:
-                a=random.randint(0,n-1)
                 while True:
                     b=random.randint(0,n-1)
-                    if a!=b:break
-                self.positions[a],self.positions[b]=self.positions[b],self.positions[a]
+                    if i!=b:break
+                self.positions[i],self.positions[b]=self.positions[b],self.positions[i]
         return self
 
     def copy(self):
