@@ -47,6 +47,75 @@ class Triangle:
         a=self.area()
         return np.abs(a-(t1.area()+t2.area()+t3.area()))<1e-4
 
+class Covering:
+    pts=None
+    points=None
+    triangles=None
+    side=15
+    
+    def prepare_data():
+        Covering.points=[Point(x,y) for x,y in Covering.pts]
+        Covering.triangles=[p.generate_equilateral_triangle(Covering.side) for p in Covering.points]
+        
+    def __init__(self,init=True):
+        if init:
+            self.solution=np.random.randint(low=0,high=2,size=len(Covering.pts))
+        
+    def draw(self):
+        _, ax = plt.subplots(figsize=(6, 6))
+        for i,cds in enumerate(pts):
+            p=Point(cds[0],cds[1])
+            if self.solution[i]:
+                Covering.triangles[i].draw(ax)
+            p.draw(ax)
+        plt.show()
+    
+    def compute_fitness(self):
+        nb=0
+        candidates=[Covering.triangles[i] for i in range(len(Covering.triangles)) if self.solution[i]]
+        for i in range(len(Covering.points)):
+            for t in candidates:
+                if t.contains(Covering.points[i]):
+                    nb+=1
+                    break
+        self.fitness=self.solution.sum()-nb
+        self.nb=nb
+        self.sm=self.solution.sum()
+        return self.fitness
+    
+    def __str__(self):
+        return f"{self.fitness}: {self.nb}, {self.sm}"
+    
+    def clone(self):
+        res=Covering(False)
+        res.solution=np.array(self.solution)
+        return res
+
+    def mutate(self,pm=0.05):
+        for i in range(self.solution.shape[0]):
+            if np.random.random()<pm:
+                self.solution[i]=1-self.solution[i]
+        self.compute_fitness()
+        return self
+    
+    def simulated_annealing(self,T=50,a=0.95):
+        self.compute_fitness()
+        current=self
+        best=current
+        for i in range(1000):
+            best_neighbor=min([current.clone().mutate() for _ in range(10)])
+            print(i,">>",best)
+            if current>best_neighbor:
+                current=best_neighbor
+            else:
+                r=np.exp((current.fitness-best_neighbor.fitness)/T)
+                if np.random.random()<r:
+                    current=best_neighbor
+            if best>current:
+                best=current
+            T*=a
+        return current
+
 
 pts=[
     [0.21785146,32.80884325],
@@ -100,10 +169,11 @@ pts=[
     [73.94323878,97.65276912],
     [37.71273758,5.55845728]
 ]
-_, ax = plt.subplots(figsize=(6, 6))
-for x,y in pts:
-    p=Point(x,y)
-    t=p.generate_equilateral_triangle(30)
-    p.draw(ax)
-    t.draw(ax)
+
+Covering.pts=pts
+Covering.side=50
+Covering.prepare_data()
+
+c=Covering()
+c.draw()
 plt.show()
