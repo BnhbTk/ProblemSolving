@@ -69,6 +69,9 @@ class Covering:
                 Covering.triangles[i].draw(ax)
             p.draw(ax)
         plt.show()
+
+    def __lt__(self,obj):
+        return self.fitness<obj.fitness
     
     def compute_fitness(self):
         nb=0
