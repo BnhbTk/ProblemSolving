@@ -45,7 +45,7 @@ class Triangle:
         t2=Triangle(self.p1,self.p3,p)
         t3=Triangle(self.p2,self.p3,p)
         a=self.area()
-        return np.abs(a-(t1.area()+t2.area()+t3.area()))<1e-4
+        return np.abs(a-(t1.area()+t2.area()+t3.area()))<1e-6
 
 class Covering:
     pts=None
@@ -69,9 +69,6 @@ class Covering:
                 Covering.triangles[i].draw(ax)
             p.draw(ax)
         plt.show()
-
-    def __lt__(self,obj):
-        return self.fitness<obj.fitness
     
     def compute_fitness(self):
         nb=0
@@ -101,6 +98,17 @@ class Covering:
         self.compute_fitness()
         return self
     
+    def __lt__(self,obj):
+        return self.fitness<obj.fitness
+    
+    def crossover(self,other):
+        child1=Covering(False)
+        child2=Covering(False)
+        pt=1+np.random.randint(len(self.solution)-1)
+        child1.solution=np.concatenate((self.solution[:pt],other.solution[pt:]))
+        child2.solution=np.concatenate((other.solution[:pt],self.solution[pt:]))
+        return child1,child2
+    
     def simulated_annealing(self,T=50,a=0.95):
         self.compute_fitness()
         current=self
@@ -119,6 +127,62 @@ class Covering:
             T*=a
         return current
 
+class GeneticAlgorithm:
+    def __init__(self,pop_size):
+        self.population=[Covering() for _ in range(pop_size)]
+        for q in self.population:
+            q.compute_fitness()
+    
+    def select(self,method):
+        res=[]
+        n=len(self.population)
+        if method=="elitist":
+            return self.population
+        elif method=="tournoi":
+            k=6
+            for i in range(n):
+                nb=0
+                k=6
+                pool=[]
+                while nb<k:
+                    c=np.random.choice(self.population)
+                    if c not in pool:
+                        pool.append(c)
+                        nb+=1
+                res.append(min(pool))
+        elif method=="wheel":
+            weights=[np.abs(r.fitness) for r in self.population]
+            res=random.choices(self.population,weights,k=len(self.population))
+        else:
+            raise ValueError(f"Unknown selection method {method}")
+        return res
+    
+    def generation(self,pc,pm,selection):
+        parents=self.select(selection)
+        children:list[Covering]=[]
+        for i in range(len(parents)//2):
+            if random.random()<pc:
+                child1,child2=parents[2*i].crossover(parents[2*i+1])
+                children.append(child1)
+                children.append(child2)
+                child1.mutate(pm)
+                child2.mutate(pm)
+                
+
+        for i in range(len(children)//2):
+            children[i].compute_fitness()
+            self.population[self.initsize-i-1]=children[i]
+        
+        return self.population[0]
+    
+    def execute(self,iterations,pc,pm,selection):
+        self.initsize=len(self.population)
+        
+        for i in range(iterations):
+            self.population.sort()
+            best=self.generation(pc,pm,selection)
+            print(i,best)
+        return best
 
 pts=[
     [0.21785146,32.80884325],
@@ -174,9 +238,10 @@ pts=[
 ]
 
 Covering.pts=pts
-Covering.side=50
+Covering.side=30
 Covering.prepare_data()
 
-c=Covering()
-c.draw()
+ga=GeneticAlgorithm(40)
+sol=ga.execute(800,0.95,0.05,"wheel")
+sol.draw()
 plt.show()
